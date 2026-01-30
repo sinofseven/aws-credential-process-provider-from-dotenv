@@ -24,7 +24,7 @@ fn main() {
     let path = matches.get_one::<String>("DOTENV_FILE").unwrap();
     let env = EnvLoader::with_path(path)
         .load()
-        .expect(&format!("failed to load .env file (path: {})", path));
+        .unwrap_or_else(|e| panic!("failed to load .env file (path: {}): {}", path, e));
 
     let output = Output {
         version: 1,

@@ -5,6 +5,10 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.53", features = ["cargo"] }
-dotenvy = { git = "https://github.com/allan2/dotenvy.git", branch = "main"}
-serde = {version = "1.0.228", features = ["derive"]}
+dotenvy = { git = "https://github.com/allan2/dotenvy.git", rev = "86c0d6dd2938e615135813df9e3274bf8f42c455" }
+serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
+redis = "1.0.3"
+dirs = "6.0.0"
+toml = "0.9.8"
+shellexpand = "3.1.1"

@@ -1,39 +1,67 @@
+mod models;
+mod redis;
+mod variables;
+
 use clap::{arg, command};
-use dotenvy::EnvLoader;
-use serde::Serialize;
+use dotenvy::{EnvLoader, EnvMap};
 
-#[derive(Serialize, Debug)]
-#[serde(rename_all = "PascalCase")]
-struct Output {
-    version: usize,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    access_key_id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    secret_access_key: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    session_token: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    expiration: Option<String>,
-}
+fn main() -> Result<(), String> {
+    let config = crate::models::configure::Config::load()?;
 
-fn main() {
     let matches = command!()
         .arg(arg!(<DOTENV_FILE>).required(true))
         .get_matches();
 
     let path = matches.get_one::<String>("DOTENV_FILE").unwrap();
-    let env = EnvLoader::with_path(path)
-        .load()
-        .unwrap_or_else(|e| panic!("failed to load .env file (path: {}): {}", path, e));
 
-    let output = Output {
-        version: 1,
-        access_key_id: env.get("AccessKeyId").map(|x| x.to_string()),
-        secret_access_key: env.get("SecretAccessKey").map(|x| x.to_string()),
-        session_token: env.get("SessionToken").map(|x| x.to_string()),
-        expiration: env.get("Expiration").map(|x| x.to_string()),
+    let mut con = if let Some(redis_config) = &config.redis {
+        let con = crate::redis::connect(redis_config)?;
+        Some(con)
+    } else {
+        None
     };
 
-    let text = serde_json::to_string(&output).expect("failed to serialize output");
+    if let Some(con) = &mut con
+        && let Some(value) = crate::redis::get_value(path, con)?
+    {
+        println!("{}", value);
+        return Ok(());
+    }
+
+    let text = get_from_env_file(path)?;
+
+    if let Some(con) = &mut con {
+        crate::redis::set_value(path, &text, &config.redis.unwrap(), con)?;
+    }
+
     println!("{}", text);
+
+    Ok(())
+}
+
+fn get_from_env_file(env_file_path: &str) -> Result<String, String> {
+    let env = EnvLoader::with_path(env_file_path)
+        .load()
+        .unwrap_or_else(|e| panic!("failed to load .env file (path: {}): {}", env_file_path, e));
+
+    let output = crate::models::output::Output {
+        version: 1,
+        access_key_id: get_value(&env, &crate::variables::ALL_KEYS_ACCESS_KEY_ID),
+        secret_access_key: get_value(&env, &crate::variables::ALL_KEYS_SECRET_ACCESS_KEY),
+        session_token: get_value(&env, &crate::variables::ALL_KEYS_SESSION_TOKEN),
+        expiration: get_value(&env, &crate::variables::ALL_KEYS_EXPIRATION),
+    };
+
+    serde_json::to_string(&output).map_err(|e| format!("failed to serialize output: {e}"))
+}
+
+fn get_value(env: &EnvMap, all_keys: &[&str]) -> Option<String> {
+    for &key in all_keys {
+        let value = env.get(key);
+        if value.is_some() {
+            return value.map(|x| x.to_string());
+        }
+    }
+
+    None
 }

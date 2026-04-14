@@ -11,6 +11,7 @@ This tool was created to use `.env` files mounted by [1Password Environments](ht
 - Reads AWS credentials (`AccessKeyId`, `SecretAccessKey`, `SessionToken`, `Expiration`) from `.env` files
 - Outputs `credential_process`-compatible JSON (Version 1)
 - Supports 6 naming conventions per credential field (PascalCase, SCREAMING_SNAKE_CASE, snake_case, and their `Aws`/`AWS_`/`aws_` prefixed variants)
+- Optional `--prefix` and `--suffix` flags to adapt key name lookups to custom `.env` naming conventions
 - Optional Redis caching with configurable TTL (default: 60 seconds)
 - No AWS SDK dependency — pure credential file parsing
 
@@ -38,6 +39,32 @@ You can then verify the integration:
 ```sh
 aws sts get-caller-identity --profile my-profile
 ```
+
+### Prefix and Suffix Options
+
+You can customize key name lookups with `--prefix` and/or `--suffix` flags:
+
+```sh
+aws-credential-process-provider-from-dotenv /path/to/credentials.env --prefix myapp
+aws-credential-process-provider-from-dotenv /path/to/credentials.env --suffix dev
+aws-credential-process-provider-from-dotenv /path/to/credentials.env --prefix myapp --suffix dev
+```
+
+The prefix/suffix are case-adapted to match each naming convention. For example, with `--prefix myapp`:
+
+| Without prefix | With `--prefix myapp` |
+|---|---|
+| `AccessKeyId` | `MyappAccessKeyId` |
+| `ACCESS_KEY_ID` | `MYAPP_ACCESS_KEY_ID` |
+| `access_key_id` | `myapp_access_key_id` |
+
+With `--suffix dev`:
+
+| Without suffix | With `--suffix dev` |
+|---|---|
+| `AccessKeyId` | `AccessKeyIdDev` |
+| `ACCESS_KEY_ID` | `ACCESS_KEY_ID_DEV` |
+| `access_key_id` | `access_key_id_dev` |
 
 ### .env File Format
 
@@ -69,7 +96,7 @@ cache_second = 120
 
 If the config file does not exist, Redis caching is disabled and the tool runs without it.
 
-The cache key format is: `aws-credential-process-provider-from-dotenv:<expanded-path>`
+The cache key format is: `aws-credential-process-provider-from-dotenv:<expanded-path>[:prefix=<PREFIX>][:suffix=<SUFFIX>]`
 
 ## Output Format
 

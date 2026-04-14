@@ -11,6 +11,7 @@
 - `.env` ファイルから AWS 認証情報 (`AccessKeyId`、`SecretAccessKey`、`SessionToken`、`Expiration`) を読み取る
 - `credential_process` 互換の JSON (Version 1) を出力する
 - 各認証情報フィールドにつき 6 種類の命名規則に対応 (PascalCase、SCREAMING_SNAKE_CASE、snake_case、およびそれぞれの `Aws`/`AWS_`/`aws_` プレフィックス付き)
+- `--prefix` / `--suffix` オプションで、カスタム命名規則の `.env` ファイルにも対応可能
 - オプションの Redis キャッシュ (TTL は設定可能、デフォルト: 60 秒)
 - AWS SDK への依存なし — 純粋な認証情報ファイルの解析
 
@@ -38,6 +39,32 @@ credential_process = /path/to/aws-credential-process-provider-from-dotenv /path/
 ```sh
 aws sts get-caller-identity --profile my-profile
 ```
+
+### プレフィックス・サフィックスオプション
+
+`--prefix` / `--suffix` フラグで、キー名の検索に使用する名前をカスタマイズできます。
+
+```sh
+aws-credential-process-provider-from-dotenv /path/to/credentials.env --prefix myapp
+aws-credential-process-provider-from-dotenv /path/to/credentials.env --suffix dev
+aws-credential-process-provider-from-dotenv /path/to/credentials.env --prefix myapp --suffix dev
+```
+
+プレフィックス・サフィックスは各命名規則に合わせてケース変換されます。たとえば `--prefix myapp` を指定した場合:
+
+| プレフィックスなし | `--prefix myapp` 指定時 |
+|---|---|
+| `AccessKeyId` | `MyappAccessKeyId` |
+| `ACCESS_KEY_ID` | `MYAPP_ACCESS_KEY_ID` |
+| `access_key_id` | `myapp_access_key_id` |
+
+`--suffix dev` を指定した場合:
+
+| サフィックスなし | `--suffix dev` 指定時 |
+|---|---|
+| `AccessKeyId` | `AccessKeyIdDev` |
+| `ACCESS_KEY_ID` | `ACCESS_KEY_ID_DEV` |
+| `access_key_id` | `access_key_id_dev` |
 
 ### .env ファイルの形式
 
@@ -69,7 +96,7 @@ cache_second = 120
 
 設定ファイルが存在しない場合、Redis キャッシュは無効になり、ツールはそのまま動作します。
 
-キャッシュキーの形式: `aws-credential-process-provider-from-dotenv:<展開済みパス>`
+キャッシュキーの形式: `aws-credential-process-provider-from-dotenv:<展開済みパス>[:prefix=<PREFIX>][:suffix=<SUFFIX>]`
 
 ## 出力形式
 

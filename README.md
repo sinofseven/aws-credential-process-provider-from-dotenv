@@ -1,6 +1,6 @@
 [日本語](./README_ja.md)
 
-# aws-credential-process-provider-from-dotenv
+# [aws-credential-process-provider-from-dotenv](https://github.com/sinofseven/aws-credential-process-provider-from-dotenv)
 
 A Rust CLI tool that reads AWS credentials from `.env` files and outputs them in the JSON format required by AWS CLI's [`credential_process`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sourcing-external.html). Parsed credentials can optionally be cached in Redis.
 

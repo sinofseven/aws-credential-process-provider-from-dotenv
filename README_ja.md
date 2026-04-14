@@ -1,6 +1,6 @@
 [English](./README.md)
 
-# aws-credential-process-provider-from-dotenv
+# [aws-credential-process-provider-from-dotenv](https://github.com/sinofseven/aws-credential-process-provider-from-dotenv)
 
 `.env` ファイルから AWS 認証情報を読み取り、AWS CLI の [`credential_process`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sourcing-external.html) が要求する JSON 形式で出力する Rust 製 CLI ツールです。オプションで Redis によるキャッシュに対応しています。
 

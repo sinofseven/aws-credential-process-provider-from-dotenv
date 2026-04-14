@@ -4,6 +4,9 @@ on:
       - master
     tags:
       - "v*"
+  pull_request:
+    branches:
+      - master
 
 env:
   BINARY_NAME: aws-credential-process-provider-from-dotenv

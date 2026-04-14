@@ -10,13 +10,25 @@ pub fn connect(config: &RedisConfig) -> Result<Connection, String> {
         .map_err(|e| format!("failed to connect redis: {}", e))
 }
 
-fn create_key(env_file_path: &str) -> String {
+fn create_key(env_file_path: &str, prefix: Option<&str>, suffix: Option<&str>) -> String {
     let path = shellexpand::tilde(env_file_path);
-    format!("{}:{}", PRODUCT_NAME, path)
+    let mut key = format!("{}:{}", PRODUCT_NAME, path);
+    if let Some(p) = prefix {
+        key.push_str(&format!(":prefix={}", p));
+    }
+    if let Some(s) = suffix {
+        key.push_str(&format!(":suffix={}", s));
+    }
+    key
 }
 
-pub fn get_value(env_file_path: &str, con: &mut Connection) -> Result<Option<String>, String> {
-    let key = create_key(env_file_path);
+pub fn get_value(
+    env_file_path: &str,
+    prefix: Option<&str>,
+    suffix: Option<&str>,
+    con: &mut Connection,
+) -> Result<Option<String>, String> {
+    let key = create_key(env_file_path, prefix, suffix);
 
     con.get(&key)
         .map_err(|e| format!("failed to get value (key: {}): {}", key, e))
@@ -24,11 +36,13 @@ pub fn get_value(env_file_path: &str, con: &mut Connection) -> Result<Option<Str
 
 pub fn set_value(
     env_file_path: &str,
+    prefix: Option<&str>,
+    suffix: Option<&str>,
     value: &str,
     config: &RedisConfig,
     con: &mut Connection,
 ) -> Result<(), String> {
-    let key = create_key(env_file_path);
+    let key = create_key(env_file_path, prefix, suffix);
     let sec = if let Some(sec) = config.cache_second {
         sec
     } else {

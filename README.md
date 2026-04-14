@@ -98,10 +98,6 @@ The tool tries each key name in the order listed below and uses the first match 
 
 > **Note:** `Expiration` only supports 3 variants (no `Aws`/`AWS_`/`aws_` prefixed forms).
 
-## Third-Party Licenses
-
-Third-party license information is available in [third_party_licenses.html](./third_party_licenses.html).
-
 ## License
 
 MIT

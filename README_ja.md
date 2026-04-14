@@ -98,10 +98,6 @@ cache_second = 120
 
 > **注意:** `Expiration` のみ 3 種類の対応で、`Aws`/`AWS_`/`aws_` プレフィックス付きの形式はありません。
 
-## サードパーティライセンス
-
-サードパーティのライセンス情報は [third_party_licenses.html](./third_party_licenses.html) を参照してください。
-
 ## ライセンス
 
 MIT

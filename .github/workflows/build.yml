@@ -19,6 +19,7 @@ jobs:
       TARGET: x86_64-unknown-linux-musl
     steps:
       - uses: actions/checkout@v6
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - uses: dtolnay/rust-toolchain@stable
         with:
           target: ${{ env.TARGET }}
@@ -46,6 +47,7 @@ jobs:
       TARGET: aarch64-unknown-linux-musl
     steps:
       - uses: actions/checkout@v6
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - uses: dtolnay/rust-toolchain@stable
         with:
           target: ${{ env.TARGET }}
@@ -67,22 +69,18 @@ jobs:
           path: tmp
           retention-days: 1
 
-
   build-linux-arm:
     runs-on: ubuntu-22.04-arm
     env:
       TARGET: arm-unknown-linux-musleabihf
     steps:
       - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          target: ${{ env.TARGET }}
       - run: |
-          sudo apt-get update
-          sudo apt-get install -y musl-tools gcc-arm-linux-gnueabihf
-      - run: cargo build --release --target $TARGET
-        env:
-          CARGO_TARGET_ARM_UNKNOWN_LINUX_MUSLEABIHF_LINKER: arm-linux-gnueabihf-gcc
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            ghcr.io/rust-cross/rust-musl-cross:${{ env.TARGET }} \
+            cargo build --release --target ${{ env.TARGET }}
       - run: |
           mkdir -p "${{ env.TMP_DIR }}"
           cp "${{ env.SOURCE_BINARY }}" "${{ env.TMP_DIR }}"
@@ -103,6 +101,7 @@ jobs:
       TARGET: aarch64-apple-darwin
     steps:
       - uses: actions/checkout@v6
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - uses: dtolnay/rust-toolchain@stable
         with:
           target: ${{ env.TARGET }}
@@ -127,6 +126,7 @@ jobs:
       TARGET: x86_64-pc-windows-msvc
     steps:
       - uses: actions/checkout@v6
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - uses: dtolnay/rust-toolchain@stable
         with:
           target: ${{ env.TARGET }}
@@ -153,7 +153,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo install cargo-about
+      - run: cargo install cargo-about --features="cli"
       - run: cargo about generate about.hbs > ${{ env.THIRD_PARTY_LICENSE_OUTPUT }}
       - uses: actions/upload-artifact@v7
         with:

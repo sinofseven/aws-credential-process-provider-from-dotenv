@@ -2,6 +2,7 @@
 name = "aws-credential-process-provider-from-dotenv"
 version = "0.1.0"
 edition = "2024"
+description = "AWS credential provider from .env files for AWS CLI credential_process"
 license = "MIT"
 license-file = "LICENSE"
 

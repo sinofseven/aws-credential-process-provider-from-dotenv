@@ -15,6 +15,28 @@
 - オプションの Redis キャッシュ (TTL は設定可能、デフォルト: 60 秒)
 - AWS SDK への依存なし — 純粋な認証情報ファイルの解析
 
+## インストール方法
+
+### GitHub Releases からのダウンロード
+
+[GitHub Releases](https://github.com/sinofseven/aws-credential-process-provider-from-dotenv/releases) から複数のプラットフォーム対応バイナリが利用できます。
+
+対応プラットフォーム:
+- Linux x86_64 (musl)
+- Linux ARM64 (musl)
+- Linux ARM (musl)
+- macOS (aarch64)
+- Windows x86_64 (MSVC)
+
+お使いのプラットフォーム向けのバイナリをダウンロード、展開して、`$PATH` に配置してください。
+
+### Homebrew でのインストール
+
+```bash
+brew tap sinofseven/luciferous-tap
+brew install aws-credential-process-provider-from-dotenv
+```
+
 ## 使い方
 
 ### 基本的な使い方

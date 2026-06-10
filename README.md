@@ -15,6 +15,28 @@ This tool was created to use `.env` files mounted by [1Password Environments](ht
 - Optional Redis caching with configurable TTL (default: 60 seconds)
 - No AWS SDK dependency — pure credential file parsing
 
+## Installation
+
+### From GitHub Releases
+
+Prebuilt binaries for multiple platforms are available on [GitHub Releases](https://github.com/sinofseven/aws-credential-process-provider-from-dotenv/releases).
+
+Supported platforms:
+- Linux x86_64 (musl)
+- Linux ARM64 (musl)
+- Linux ARM (musl)
+- macOS (aarch64)
+- Windows x86_64 (MSVC)
+
+Download the appropriate binary for your platform, extract it, and place it in your `$PATH`.
+
+### Using Homebrew
+
+```bash
+brew tap sinofseven/luciferous-tap
+brew install aws-credential-process-provider-from-dotenv
+```
+
 ## Usage
 
 ### Basic Usage

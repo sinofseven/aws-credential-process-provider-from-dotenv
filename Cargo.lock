@@ -174,7 +174,7 @@ dependencies = [
 [[package]]
 name = "dotenvy"
 version = "0.15.7"
-source = "git+https://github.com/allan2/dotenvy.git?rev=fa25166994d6978bd2e002f0ed190c0c39674ebe#fa25166994d6978bd2e002f0ed190c0c39674ebe"
+source = "git+https://github.com/allan2/dotenvy.git?rev=cf125ddeb263c234ad83a46e5d4115b53888f24f#cf125ddeb263c234ad83a46e5d4115b53888f24f"
 
 [[package]]
 name = "equivalent"
